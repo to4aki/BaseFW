@@ -19,16 +19,16 @@ void PanelWidget::draw(
 {
     Draw::fillRect(
             fb,
-            x_,
-            y_,
+            screenX(),
+            screenY(),
             w_,
             h_,
             Color::GRAY);
 
     Draw::rect(
             fb,
-            x_,
-            y_,
+            screenX(),
+            screenY(),
             w_,
             h_,
             Color::WHITE);

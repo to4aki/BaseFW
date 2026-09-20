@@ -1,7 +1,8 @@
 #include "Renderer.h"
 
-static const char *kVertexShader = R"(
-#version 300 es
+static const char
+        kVertexShader[] =
+        R"(#version 300 es
 
 in vec2 aPos;
 in vec2 aUV;
@@ -11,12 +12,16 @@ out vec2 vUV;
 void main()
 {
     vUV = aUV;
-    gl_Position = vec4(aPos, 0.0, 1.0);
+    gl_Position = vec4(
+            aPos,
+            0.0,
+            1.0);
 }
 )";
 
-static const char *kFragmentShader = R"(
-#version 300 es
+static const char
+        kFragmentShader[] =
+        R"(#version 300 es
 
 precision mediump float;
 
@@ -28,14 +33,20 @@ out vec4 outColor;
 
 void main()
 {
-    outColor = texture(uTexture, vUV);
+    outColor =
+            texture(
+                    uTexture,
+                    vUV);
 }
 )";
 
+
 static GLuint compileShader(
         GLenum type,
-        const char *source) {
-    GLuint shader = glCreateShader(type);
+        const char *source)
+{
+    GLuint shader =
+            glCreateShader(type);
 
     glShaderSource(
             shader,
@@ -43,7 +54,8 @@ static GLuint compileShader(
             &source,
             nullptr);
 
-    glCompileShader(shader);
+    glCompileShader(
+            shader);
 
     GLint ok = 0;
 
@@ -52,7 +64,29 @@ static GLuint compileShader(
             GL_COMPILE_STATUS,
             &ok);
 
-    assert(ok);
+    if(!ok)
+    {
+        char log[2048];
+
+        GLsizei len = 0;
+
+        glGetShaderInfoLog(
+                shader,
+                sizeof(log),
+                &len,
+                log);
+
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "Shader compile failed:\n%s",
+                log);
+
+        glDeleteShader(
+                shader);
+
+        return 0;
+    }
 
     return shader;
 }

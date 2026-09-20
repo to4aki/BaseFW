@@ -4,6 +4,7 @@
 #include "FrameBuffer.h"
 #include "WidgetManager.h"
 
+
 class FrameBufferMachine
         : public IMachine
 {

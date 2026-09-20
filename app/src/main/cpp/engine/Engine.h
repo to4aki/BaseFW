@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "AndroidOut.h"
 #include "IMachine.h"
+#include "Input.h"
 
 class Renderer;
 

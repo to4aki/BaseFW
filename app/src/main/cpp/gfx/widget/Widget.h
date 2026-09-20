@@ -2,8 +2,7 @@
 
 #include "FrameBuffer.h"
 
-class Widget
-{
+class Widget {
 public:
 
     Widget(
@@ -15,7 +14,12 @@ public:
     virtual ~Widget();
 
     virtual void draw(
-            FrameBuffer& fb) = 0;
+            FrameBuffer &fb) = 0;
+
+    void setParent(
+            Widget *parent) {
+        parent_ = parent;
+    }
 
 protected:
 
@@ -24,4 +28,26 @@ protected:
 
     int w_;
     int h_;
+
+    Widget *parent_ = nullptr;
+
+    int screenX() const
+    {
+        if(parent_ == nullptr)
+        {
+            return x_;
+        }
+
+        return parent_->screenX() + x_;
+    }
+
+    int screenY() const
+    {
+        if(parent_ == nullptr)
+        {
+            return y_;
+        }
+
+        return parent_->screenY() + y_;
+    }
 };

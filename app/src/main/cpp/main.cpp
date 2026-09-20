@@ -1,45 +1,117 @@
 #include <memory>
 
 #include <game-activity/native_app_glue/android_native_app_glue.h>
+#include <game-activity/GameActivity.h>
+#include <game-activity/GameActivityEvents.h>
 
 #include "AndroidOut.h"
 
-#include "engine/Engine.h"
-#include "engine/Renderer.h"
+#include "Engine.h"
+#include "Renderer.h"
+#include "Input.h"
 
 #include "machine/TestMachine.h"
 
 extern "C"
 {
 
-void handle_cmd(android_app* app, int32_t cmd)
-{
-    switch (cmd)
-    {
-        case APP_CMD_INIT_WINDOW:
-            aout << "Window created" << std::endl;
-            break;
+#include <android/log.h>
 
-        case APP_CMD_TERM_WINDOW:
-            aout << "Window destroyed" << std::endl;
+void handle_cmd(
+        android_app* app,
+        int32_t cmd)
+{
+    switch(cmd)
+    {
+        case APP_CMD_KEY_EVENT:
+        {
+            android_input_buffer* inputBuffer =
+                    android_app_swap_input_buffers(
+                            app);
+
+            if(inputBuffer)
+            {
+                for(uint64_t i = 0;
+                    i < inputBuffer->keyEventsCount;
+                    i++)
+                {
+                    const GameActivityKeyEvent& e =
+                            inputBuffer->keyEvents[i];
+
+                    if(e.action != 0)
+                    {
+                        continue;
+                    }
+
+                    switch(e.keyCode)
+                    {
+                        case 19:
+
+                            Input::pressKey(
+                                    Input::UP);
+
+                            break;
+
+                        case 20:
+
+                            Input::pressKey(
+                                    Input::DOWN);
+
+                            break;
+
+                        case 21:
+
+                            Input::pressKey(
+                                    Input::LEFT);
+
+                            break;
+
+                        case 22:
+
+                            Input::pressKey(
+                                    Input::RIGHT);
+
+                            break;
+
+                        case 66:
+
+                            Input::pressKey(
+                                    Input::ENTER);
+
+                            break;
+
+                        case 111:
+
+                            Input::pressKey(
+                                    Input::ESC);
+
+                            break;
+                    }
+                }
+
+                android_app_clear_key_events(
+                        inputBuffer);
+
+                android_app_clear_motion_events(
+                        inputBuffer);
+            }
+
             break;
+        }
 
         default:
+
             break;
     }
 }
 
 void android_main(android_app* app)
 {
-    aout << "android_main" << std::endl;
+    app->onAppCmd =
+            handle_cmd;
 
-    app->onAppCmd = handle_cmd;
-
-    //
-    // Window生成待ち
-    //
-    while (app->window == nullptr &&
-           !app->destroyRequested)
+    while(app->window == nullptr &&
+          !app->destroyRequested)
     {
         int events;
         android_poll_source* source = nullptr;
@@ -48,23 +120,25 @@ void android_main(android_app* app)
                 -1,
                 nullptr,
                 &events,
-                reinterpret_cast<void**>(&source));
+                reinterpret_cast<void**>(
+                        &source));
 
-        if (source)
+        if(source)
         {
-            source->process(app, source);
+            source->process(
+                    app,
+                    source);
         }
     }
 
-    if (app->destroyRequested)
+    if(app->destroyRequested)
     {
         return;
     }
 
-    aout << "window ready" << std::endl;
-
     auto renderer =
-            std::make_unique<Renderer>(app);
+            std::make_unique<Renderer>(
+                    app);
 
     auto machine =
             std::make_unique<TestMachine>();
@@ -73,25 +147,26 @@ void android_main(android_app* app)
             machine.get(),
             renderer.get());
 
-    while (!app->destroyRequested)
+    while(!app->destroyRequested)
     {
         int events;
         android_poll_source* source = nullptr;
 
-        while (ALooper_pollOnce(
-                0,
-                nullptr,
-                &events,
-                reinterpret_cast<void**>(&source)) >= 0)
-        {
-            if (source)
-            {
-                source->process(app, source);
-            }
+        int result =
+                ALooper_pollOnce(
+                        0,
+                        nullptr,
+                        &events,
+                        reinterpret_cast<void**>(
+                                &source));
 
-            if (app->destroyRequested)
+        if(result >= 0)
+        {
+            if(source)
             {
-                return;
+                source->process(
+                        app,
+                        source);
             }
         }
 

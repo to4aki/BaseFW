@@ -19,10 +19,14 @@ add_library(test_cpp SHARED
         gfx/widget/LabelWidget.cpp
         gfx/widget/PanelWidget.cpp
         gfx/widget/StatusBarWidget.cpp
+        gfx/widget/GroupBoxWidget.cpp
+        gfx/widget/MenuBarWidget.cpp
+        gfx/widget/PopupMenuWidget.cpp
         gfx/widget/WidgetManager.cpp
 
         engine/Engine.cpp
         engine/Renderer.cpp
+        engine/Input.cpp
 
         machine/FrameBufferMachine.cpp
         machine/TestMachine.cpp

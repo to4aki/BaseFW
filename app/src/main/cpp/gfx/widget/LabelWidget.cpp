@@ -25,8 +25,8 @@ void LabelWidget::draw(
 {
     Draw::drawString(
             fb,
-            x_,
-            y_,
+            screenX(),
+            screenY(),
             text_.c_str(),
             Color::WHITE,
             Color::BLACK);

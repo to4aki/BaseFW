@@ -3,9 +3,7 @@
 #include "AndroidOut.h"
 
 #include "FrameBufferMachine.h"
-#include "StatusBarWidget.h"
-#include "PanelWidget.h"
-#include "LabelWidget.h"
+
 
 class TestMachine
         : public FrameBufferMachine
@@ -22,4 +20,10 @@ protected:
     void onReset() override;
 
     void onFrame() override;
+
+    MenuBarWidget* menu_ = nullptr;
+
+    PopupMenuWidget* popup_ = nullptr;
+
+    void rebuildPopup();
 };

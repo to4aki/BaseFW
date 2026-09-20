@@ -18,16 +18,16 @@ void StatusBarWidget::draw(
 {
     Draw::fillRect(
             fb,
-            x_,
-            y_,
+            screenX(),
+            screenY(),
             w_,
             h_,
             Color::BLUE);
 
     Draw::drawString(
             fb,
-            x_ + 4,
-            y_ + 4,
+            screenX() + 4,
+            screenY() + 4,
             text_.c_str(),
             Color::WHITE,
             Color::BLUE);

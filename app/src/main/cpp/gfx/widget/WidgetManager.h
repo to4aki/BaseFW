@@ -5,6 +5,12 @@
 
 #include "Widget.h"
 #include "FrameBuffer.h"
+#include "StatusBarWidget.h"
+#include "PanelWidget.h"
+#include "LabelWidget.h"
+#include "GroupBoxWidget.h"
+#include "PopupMenuWidget.h"
+#include "MenuBarWidget.h"
 
 class WidgetManager
 {

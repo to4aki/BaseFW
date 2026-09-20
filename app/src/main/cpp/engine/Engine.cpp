@@ -11,17 +11,21 @@ Engine::Engine(
 
 void Engine::tick()
 {
-    static int cnt=0;
-
-    if((cnt++ % 60)==0)
-    {
-        aout << "tick" << std::endl;
-    }
-
     machine_->runFrame();
 
     renderer_->render(
             machine_->frameBuffer(),
             machine_->width(),
             machine_->height());
+
+    for(int i = 0;
+        i < Input::COUNT;
+        i++)
+    {
+        Input::setKey(
+                static_cast<Input::Key>(i),
+                false);
+    }
+
+    Input::endFrame();
 }
