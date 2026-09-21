@@ -11,6 +11,19 @@ Engine::Engine(
 
 void Engine::tick()
 {
+    static int frameCounter = 0;
+
+    frameCounter++;
+
+    if((frameCounter % 60) == 0)
+    {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "ENGINE",
+                "before render %d",
+                frameCounter);
+    }
+
     machine_->runFrame();
 
     renderer_->render(
@@ -18,13 +31,13 @@ void Engine::tick()
             machine_->width(),
             machine_->height());
 
-    for(int i = 0;
-        i < Input::COUNT;
-        i++)
+    if((frameCounter % 60) == 0)
     {
-        Input::setKey(
-                static_cast<Input::Key>(i),
-                false);
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "ENGINE",
+                "after render %d",
+                frameCounter);
     }
 
     Input::endFrame();

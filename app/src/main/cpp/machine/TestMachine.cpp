@@ -8,171 +8,217 @@ TestMachine::TestMachine()
     reset();
 }
 
-void TestMachine::onReset() {
-    auto menu =
-            std::make_unique<MenuBarWidget>(
-                    width());
+void TestMachine::onInitUi() {
+    ui_.createMenuSystem(
+            width());
 
-    menu->addItem(
-            "RUN");
+    int run =
+            ui_.addMenu(
+                    "RUN",
+                    Input::NUM1);
 
-    menu->addItem(
-            "REG");
+    ui_.addMenuItem(
+            run,
+            "STEP",
+            Input::NUM1,
+            [this]()
+            {
+                console_.putString(
+                        "STEP\n");
 
-    menu->addItem(
-            "DASM");
+                console_.putString(
+                        ">");
+            });
 
-    menu->addItem(
-            "MEMORY");
+    ui_.addMenuItem(
+            run,
+            "RESET",
+            Input::NUM2,
+            [this]()
+            {
+                reset();
 
-    menu->addItem(
-            "TOOLS");
+                console_.putString(
+                        "RESET OK\n");
 
-    menu->addItem(
-            "HELP");
+                console_.putString(
+                        ">");
+            });
 
-    menu->setSelected(
-            0);
+    ui_.addMenuItem(
+            run,
+            "LOAD",
+            Input::NUM3,
+            [this]() {
+            });
 
-    menu_ =
-            menu.get();
+    ui_.addMenuItem(
+            run,
+            "SAVE",
+            Input::NUM4,
+            [this]() {
+            });
 
-    ui_.add(
-            std::move(menu));
+    int reg =
+            ui_.addMenu(
+                    "REG",
+                    Input::NUM2);
 
+    ui_.addMenuItem(
+            reg,
+            "AF",
+            Input::NUM1,
+            [this]()
+            {
+                console_.putString(
+                        "AF:1234\n");
 
-    auto popup =
-            std::make_unique<PopupMenuWidget>(
-                    0,
-                    16);
+                console_.putString(
+                        ">");
+            });
 
-    popup->addItem(
-            "STEP");
+    ui_.addMenuItem(
+            reg,
+            "BC",
+            Input::NUM2,
+            [this]() {
+            });
 
-    popup->addItem(
-            "RESET");
+    ui_.addMenuItem(
+            reg,
+            "DE",
+            Input::NUM3,
+            [this]() {
+            });
 
-    popup->addItem(
-            "LOAD");
+    ui_.addMenuItem(
+            reg,
+            "HL",
+            Input::NUM4,
+            [this]() {
+            });
 
-    popup->addItem(
-            "SAVE");
+    int dasm =
+            ui_.addMenu(
+                    "DASM",
+                    Input::NUM3);
 
-    popup_ =
-            popup.get();
+    ui_.addMenuItem(
+            dasm,
+            "PAGEUP",
+            Input::NUM1,
+            [this]() {
+            });
 
-    ui_.add(
-            std::move(popup));
+    ui_.addMenuItem(
+            dasm,
+            "PAGEDOWN",
+            Input::NUM2,
+            [this]() {
+            });
 
-    rebuildPopup();
+    int memory =
+            ui_.addMenu(
+                    "MEMORY",
+                    Input::NUM4);
+
+    ui_.addMenuItem(
+            memory,
+            "DUMP",
+            Input::NUM1,
+            [this]() {
+            });
+
+    ui_.addMenuItem(
+            memory,
+            "GOTO",
+            Input::NUM2,
+            [this]() {
+            });
+
+    int tools =
+            ui_.addMenu(
+                    "TOOLS",
+                    Input::NUM5);
+
+    ui_.addMenuItem(
+            tools,
+            "OPTIONS",
+            Input::NUM1,
+            [this]() {
+            });
+
+    ui_.addMenuItem(
+            tools,
+            "KEYMAP",
+            Input::NUM2,
+            [this]() {
+            });
+
+    int help =
+            ui_.addMenu(
+                    "HELP",
+                    Input::NUM6);
+
+    ui_.addMenuItem(
+            help,
+            "ABOUT",
+            Input::NUM1,
+            [this]() {
+            });
+
+    ui_.addMenuItem(
+            help,
+            "LICENSE",
+            Input::NUM2,
+            [this]() {
+            });
+
+    ui_.addMenuItem(
+            help,
+            "SETTINGS",
+            Input::NUM3,
+            [this]() {
+            });
+
+    ui_.addMenuItem(
+            help,
+            "VERSION",
+            Input::NUM4,
+            [this]() {
+            });
+}
+
+void TestMachine::onReset()
+{
+    ui_.clearSelection();
+
+    console_.clear();
+
+    console_.putString(
+            "Z80 EMULATOR\n");
+
+    console_.putString(
+            "VERSION 0.1\n");
+
+    console_.putString(
+            "\n");
+
+    console_.putString(
+            "012345678901234567890123456789012345678901234567890\n");
+
+    console_.putString(
+            "READY.\n");
+
+    console_.putString(
+            ">");
+
 }
 
 void TestMachine::onFrame()
 {
-    if(Input::isPressed(
-            Input::LEFT))
-    {
-        menu_->moveLeft();
-
-        rebuildPopup();
-    }
-
-    if(Input::isPressed(
-            Input::RIGHT))
-    {
-        menu_->moveRight();
-
-        rebuildPopup();
-    }
-
-    if(Input::isPressed(
-            Input::UP))
-    {
-        popup_->moveUp();
-    }
-
-    if(Input::isPressed(
-            Input::DOWN))
-    {
-        popup_->moveDown();
-    }
 }
 
-void TestMachine::rebuildPopup()
+void TestMachine::onMenuFrame()
 {
-    popup_->clear();
-
-    switch(menu_->selected())
-    {
-        case 0:
-        {
-            popup_->addItem(
-                    "STEP");
-
-            popup_->addItem(
-                    "RESET");
-
-            break;
-        }
-
-        case 1:
-        {
-            popup_->addItem(
-                    "AF");
-
-            popup_->addItem(
-                    "BC");
-
-            popup_->addItem(
-                    "DE");
-
-            popup_->addItem(
-                    "HL");
-
-            break;
-        }
-
-        case 2:
-        {
-            popup_->addItem(
-                    "PAGEUP");
-
-            popup_->addItem(
-                    "PAGEDOWN");
-
-            break;
-        }
-
-        case 5:
-        {
-            popup_->addItem(
-                    "ABOUT");
-
-            popup_->addItem(
-                    "LICENSE");
-
-            popup_->addItem(
-                    "SETTINGS");
-
-            popup_->addItem(
-                    "VERSION");
-
-            break;
-        }
-    }
-
-    int x =
-            menu_->selectedX();
-
-    if(x + popup_->width()
-       > width())
-    {
-        x =
-                width()
-                - popup_->width();
-    }
-
-    popup_->setPosition(
-            x,
-            16);
 }

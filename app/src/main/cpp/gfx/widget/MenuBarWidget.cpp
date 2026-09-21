@@ -14,17 +14,89 @@ MenuBarWidget::MenuBarWidget(
 {
 }
 
-void MenuBarWidget::addItem(
-        const std::string& text)
+int MenuBarWidget::addItem(
+        const std::string& text,
+        Input::Key shortcut)
 {
+    Item item;
+
+    if(shortcut >= Input::NUM1 &&
+       shortcut <= Input::NUM6)
+    {
+        item.text =
+                std::to_string(
+                        shortcut
+                        - Input::NUM1
+                        + 1)
+                +
+                ":"
+                +
+                text;
+    }
+    else
+    {
+        item.text =
+                text;
+    }
+
+    item.shortcut =
+            shortcut;
+
     items_.push_back(
-            text);
+            item);
+
+    return static_cast<int>(
+            items_.size() - 1);
 }
 
-void MenuBarWidget::setSelected(
-        int index)
+void MenuBarWidget::addPopItem(
+        int menuId,
+        const std::string& text,
+        Input::Key shortcut,
+        std::function<void()> callback)
 {
-    selected_ = index;
+    if(menuId < 0)
+    {
+        return;
+    }
+
+    if(menuId >= static_cast<int>(
+            items_.size()))
+    {
+        return;
+    }
+
+    PopupMenuWidget::Item item;
+
+    if(shortcut >= Input::NUM1 &&
+       shortcut <= Input::NUM6)
+    {
+        item.text =
+                std::to_string(
+                        shortcut
+                        - Input::NUM1
+                        + 1)
+                +
+                ":"
+                +
+                text;
+    }
+    else
+    {
+        item.text =
+                text;
+    }
+
+    item.shortcut =
+            shortcut;
+
+    item.callback =
+            callback;
+
+    items_[menuId]
+            .popupItems
+            .push_back(
+                    item);
 }
 
 void MenuBarWidget::draw(
@@ -45,7 +117,7 @@ void MenuBarWidget::draw(
         i < items_.size();
         i++)
     {
-        const std::string& text =
+        const Item& item =
                 items_[i];
 
         uint32_t fg =
@@ -62,7 +134,7 @@ void MenuBarWidget::draw(
                     x - 2,
                     screenY() + 2,
                     static_cast<int>(
-                            text.length()) * 8 + 4,
+                            item.text.length()) * 8 + 4,
                     12,
                     Color::WHITE);
 
@@ -77,13 +149,13 @@ void MenuBarWidget::draw(
                 fb,
                 x,
                 screenY() + 4,
-                text.c_str(),
+                item.text.c_str(),
                 fg,
                 bg);
 
         x +=
                 static_cast<int>(
-                        text.length())
+                        item.text.length())
                 * 8
                 + 8;
     }
@@ -94,6 +166,8 @@ void MenuBarWidget::moveLeft()
     if(selected_ > 0)
     {
         selected_--;
+
+        updatePopup();
     }
 }
 
@@ -104,16 +178,27 @@ void MenuBarWidget::moveRight()
                items_.size()))
     {
         selected_++;
+
+        updatePopup();
     }
 }
 
-int MenuBarWidget::selected() const
+void MenuBarWidget::setSelected(
+        int index)
 {
-    return selected_;
+    selected_ =
+            index;
+
+    updatePopup();
 }
 
 int MenuBarWidget::selectedX() const
 {
+    if(selected_ < 0)
+    {
+        return screenX();
+    }
+
     int x =
             screenX() + 4;
 
@@ -123,10 +208,83 @@ int MenuBarWidget::selectedX() const
     {
         x +=
                 static_cast<int>(
-                        items_[i].length())
+                        items_[i].text.length())
                 * 8
                 + 8;
     }
 
     return x;
+}
+
+bool MenuBarWidget::processShortcut()
+{
+    for(size_t i = 0;
+        i < items_.size();
+        i++)
+    {
+        if(items_[i].shortcut
+           ==
+           Input::COUNT)
+        {
+            continue;
+        }
+
+        if(Input::isPressed(
+                items_[i].shortcut))
+        {
+            selected_ =
+                    static_cast<int>(i);
+
+            updatePopup();
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void MenuBarWidget::setPopup(
+        PopupMenuWidget* popup)
+{
+    popup_ = popup;
+}
+
+void MenuBarWidget::updatePopup()
+{
+    if(!popup_)
+    {
+        return;
+    }
+
+    if(selected_ < 0)
+    {
+        popup_->clear();
+
+        return;
+    }
+
+    popup_->setItems(
+            items_[selected_]
+                    .popupItems);
+
+    int x =
+            selectedX();
+
+    if(x + popup_->width() >= w_)
+    {
+        x =
+                w_
+                - popup_->width()
+                - 1;
+    }
+
+    popup_->setPosition(
+            x,
+            16);
+}
+
+int MenuBarWidget::selected() const
+{
+    return selected_;
 }

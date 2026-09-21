@@ -390,7 +390,10 @@ void Renderer::render(
             0,
             4);
 
+    glFinish();
+
     eglSwapBuffers(
             display_,
             surface_);
+    
 }

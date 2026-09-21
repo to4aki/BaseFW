@@ -17,7 +17,7 @@ extern "C"
 
 #include <android/log.h>
 
-void handle_cmd(
+    void handle_cmd(
         android_app* app,
         int32_t cmd)
 {
@@ -38,54 +38,32 @@ void handle_cmd(
                     const GameActivityKeyEvent& e =
                             inputBuffer->keyEvents[i];
 
-                    if(e.action != 0)
+                    /*
+                    __android_log_print(
+                            ANDROID_LOG_ERROR,
+                            "KEYTEST",
+                            "key=%d action=%d",
+                            e.keyCode,
+                            e.action);
+                    */
+
+                    bool down =
+                            (e.action == 0);
+
+                    for(int m = 0;
+                        m < Input::keyMapCount;
+                        m++)
                     {
-                        continue;
-                    }
-
-                    switch(e.keyCode)
-                    {
-                        case 19:
-
-                            Input::pressKey(
-                                    Input::UP);
+                        if(Input::keyMap[m].androidKey
+                           ==
+                           e.keyCode)
+                        {
+                            Input::setKey(
+                                    Input::keyMap[m].key,
+                                    down);
 
                             break;
-
-                        case 20:
-
-                            Input::pressKey(
-                                    Input::DOWN);
-
-                            break;
-
-                        case 21:
-
-                            Input::pressKey(
-                                    Input::LEFT);
-
-                            break;
-
-                        case 22:
-
-                            Input::pressKey(
-                                    Input::RIGHT);
-
-                            break;
-
-                        case 66:
-
-                            Input::pressKey(
-                                    Input::ENTER);
-
-                            break;
-
-                        case 111:
-
-                            Input::pressKey(
-                                    Input::ESC);
-
-                            break;
+                        }
                     }
                 }
 
@@ -104,6 +82,7 @@ void handle_cmd(
             break;
     }
 }
+
 
 void android_main(android_app* app)
 {
@@ -152,16 +131,21 @@ void android_main(android_app* app)
         int events;
         android_poll_source* source = nullptr;
 
-        int result =
-                ALooper_pollOnce(
-                        0,
-                        nullptr,
-                        &events,
-                        reinterpret_cast<void**>(
-                                &source));
-
-        if(result >= 0)
+        while(true)
         {
+            int result =
+                    ALooper_pollOnce(
+                            0,
+                            nullptr,
+                            &events,
+                            reinterpret_cast<void**>(
+                                    &source));
+
+            if(result < 0)
+            {
+                break;
+            }
+
             if(source)
             {
                 source->process(

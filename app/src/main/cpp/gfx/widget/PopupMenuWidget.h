@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 
 #include "Widget.h"
 #include "Color.h"
@@ -12,12 +13,27 @@ class PopupMenuWidget
 {
 public:
 
+    struct Item
+    {
+        std::string text;
+
+        Input::Key shortcut =
+                Input::COUNT;
+
+        std::function<void()> callback;
+    };
+
     PopupMenuWidget(
             int x,
             int y);
 
     void addItem(
-            const std::string& text);
+            const std::string& text,
+            Input::Key shortcut,
+            std::function<void()> callback);
+
+    void setItems(
+            const std::vector<Item>& items);
 
     void draw(
             FrameBuffer& fb) override;
@@ -35,20 +51,25 @@ public:
             int x,
             int y);
 
+    bool processShortcut();
+
     int width() const
     {
         return w_;
     }
 
-private:
-
-    std::vector<std::string>
-            items_;
-
-    int selected_ = 0;
-
     int selected() const
     {
         return selected_;
     }
+
+    void executeSelected();
+
+
+private:
+
+    std::vector<Item>
+            items_;
+
+    int selected_ = 0;
 };

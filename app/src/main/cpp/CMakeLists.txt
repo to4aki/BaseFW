@@ -13,6 +13,7 @@ add_library(test_cpp SHARED
         Utility.cpp
 
         gfx/FrameBuffer.cpp
+        gfx/TextConsole.cpp
         gfx/Draw.cpp
 
         gfx/widget/Widget.cpp
@@ -27,9 +28,22 @@ add_library(test_cpp SHARED
         engine/Engine.cpp
         engine/Renderer.cpp
         engine/Input.cpp
+        engine/KeyboardBuffer.cpp
 
         machine/FrameBufferMachine.cpp
         machine/TestMachine.cpp
+
+        machine/z80ex/z80ex.c
+        machine/z80ex/z80ex_dasm.c
+)
+
+target_compile_definitions(test_cpp PRIVATE
+        WORDS_LITTLE_ENDIAN
+        Z80EX_API_REVISION=1
+        Z80EX_VERSION_MAJOR=1
+        Z80EX_VERSION_MINOR=21
+        Z80EX_RELEASE_TYPE=""
+        Z80EX_VERSION_STR="1.21"
 )
 
 # Searches for a package provided by the game activity dependency
@@ -42,10 +56,11 @@ set(CMAKE_SHARED_LINKER_FLAGS
 target_include_directories(test_cpp PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/machine
         ${CMAKE_CURRENT_SOURCE_DIR}/gfx
         ${CMAKE_CURRENT_SOURCE_DIR}/gfx/widget
-        ${CMAKE_CURRENT_SOURCE_DIR}/audio
+        ${CMAKE_CURRENT_SOURCE_DIR}/machine
+        ${CMAKE_CURRENT_SOURCE_DIR}/machine/z80ex
+        ${CMAKE_CURRENT_SOURCE_DIR}/machine/z80ex/include
 )
 
 # Configure libraries CMake uses to link your target library.

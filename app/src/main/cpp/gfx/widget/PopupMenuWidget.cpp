@@ -11,21 +11,53 @@ PopupMenuWidget::PopupMenuWidget(
                 x,
                 y,
                 0,
-                0) {
+                0)
+{
 }
 
 void PopupMenuWidget::addItem(
-        const std::string &text) {
+        const std::string& text,
+        Input::Key shortcut,
+        std::function<void()> callback)
+{
+    Item item;
+
+    if(shortcut >= Input::NUM1 &&
+       shortcut <= Input::NUM6)
+    {
+        item.text =
+                std::to_string(
+                        shortcut
+                        - Input::NUM1
+                        + 1)
+                +
+                ":"
+                +
+                text;
+    }
+    else
+    {
+        item.text =
+                text;
+    }
+
+    item.shortcut =
+            shortcut;
+
+    item.callback =
+            callback;
+
     items_.push_back(
-            text);
+            item);
 
     int itemWidth =
             static_cast<int>(
-                    text.length())
+                    item.text.length())
             * 8
             + 16;
 
-    if (itemWidth > w_) {
+    if(itemWidth > w_)
+    {
         w_ = itemWidth;
     }
 
@@ -36,8 +68,43 @@ void PopupMenuWidget::addItem(
             + 4;
 }
 
+void PopupMenuWidget::setItems(
+        const std::vector<Item>& items)
+{
+    clear();
+
+    for(const auto& item : items)
+    {
+        items_.push_back(
+                item);
+
+        int itemWidth =
+                static_cast<int>(
+                        item.text.length())
+                * 8
+                + 16;
+
+        if(itemWidth > w_)
+        {
+            w_ = itemWidth;
+        }
+    }
+
+    h_ =
+            static_cast<int>(
+                    items_.size())
+            * 12
+            + 4;
+}
+
 void PopupMenuWidget::draw(
-        FrameBuffer &fb) {
+        FrameBuffer& fb)
+{
+    if(items_.empty())
+    {
+        return;
+    }
+
     Draw::fillRect(
             fb,
             screenX(),
@@ -54,17 +121,19 @@ void PopupMenuWidget::draw(
             h_,
             Color::WHITE);
 
-    for (size_t i = 0;
-         i < items_.size();
-         i++) {
+    for(size_t i = 0;
+        i < items_.size();
+        i++)
+    {
         uint32_t fg =
                 Color::WHITE;
 
         uint32_t bg =
                 Color::BLUE;
 
-        if (static_cast<int>(i)
-            == selected_) {
+        if(static_cast<int>(i)
+           == selected_)
+        {
             Draw::fillRect(
                     fb,
                     screenX() + 3,
@@ -86,14 +155,15 @@ void PopupMenuWidget::draw(
                 screenX() + 4,
                 screenY() + 4
                 + static_cast<int>(i) * 12,
-                items_[i].c_str(),
+                items_[i].text.c_str(),
                 fg,
                 bg);
     }
 }
 
 void PopupMenuWidget::setSelected(
-        int index) {
+        int index)
+{
     selected_ = index;
 }
 
@@ -132,4 +202,50 @@ void PopupMenuWidget::setPosition(
 {
     x_ = x;
     y_ = y;
+}
+
+bool PopupMenuWidget::processShortcut()
+{
+    for(size_t i = 0;
+        i < items_.size();
+        i++)
+    {
+        if(items_[i].shortcut
+           ==
+           Input::COUNT)
+        {
+            continue;
+        }
+
+        if(Input::isPressed(
+                items_[i].shortcut))
+        {
+            selected_ =
+                    static_cast<int>(i);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void PopupMenuWidget::executeSelected()
+{
+    if(selected_ < 0)
+    {
+        return;
+    }
+
+    if(selected_
+       >= static_cast<int>(
+               items_.size()))
+    {
+        return;
+    }
+
+    if(items_[selected_].callback)
+    {
+        items_[selected_].callback();
+    }
 }
