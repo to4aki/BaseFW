@@ -1,8 +1,8 @@
 #pragma once
 
-#include "FrameBuffer.h"
-#include "Color.h"
-#include "Font8x8.h"
+#include "gfx/FrameBuffer.h"
+#include "gfx/Color.h"
+#include "gfx/Font8x8.h"
 
 namespace Draw {
     void pixel(
@@ -83,7 +83,7 @@ namespace Draw {
             uint32_t c2);
 
     void drawChar(
-            FrameBuffer& fb,
+            FrameBuffer &fb,
             int x,
             int y,
             char ch,
@@ -91,10 +91,10 @@ namespace Draw {
             uint32_t bg);
 
     void drawString(
-            FrameBuffer& fb,
+            FrameBuffer &fb,
             int x,
             int y,
-            const char* text,
+            const char *text,
             uint32_t fg,
             uint32_t bg);
 }

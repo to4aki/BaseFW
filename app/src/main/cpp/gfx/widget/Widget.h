@@ -1,6 +1,8 @@
 #pragma once
 
-#include "FrameBuffer.h"
+#include "gfx/Color.h"
+#include "gfx/Draw.h"
+#include "gfx/FrameBuffer.h"
 
 class Widget {
 public:
@@ -31,20 +33,16 @@ protected:
 
     Widget *parent_ = nullptr;
 
-    int screenX() const
-    {
-        if(parent_ == nullptr)
-        {
+    int screenX() const {
+        if (parent_ == nullptr) {
             return x_;
         }
 
         return parent_->screenX() + x_;
     }
 
-    int screenY() const
-    {
-        if(parent_ == nullptr)
-        {
+    int screenY() const {
+        if (parent_ == nullptr) {
             return y_;
         }
 

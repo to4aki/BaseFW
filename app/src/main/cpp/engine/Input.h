@@ -1,13 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include <queue>
 
-class Input
-{
+class Input {
 public:
 
-    enum Key
-    {
+    enum Key {
         UP,
         DOWN,
         LEFT,
@@ -43,18 +42,21 @@ public:
         F11,
         F12,
 
+        NUM0,
         NUM1,
         NUM2,
         NUM3,
         NUM4,
         NUM5,
         NUM6,
+        NUM7,
+        NUM8,
+        NUM9,
 
         COUNT
     };
 
-    struct KeyMap
-    {
+    struct KeyMap {
         int androidKey;
         Key key;
     };
@@ -74,8 +76,17 @@ public:
 
     static void endFrame();
 
+    static void pushChar(
+            char ch);
+
+    static bool getChar(
+            char &ch);
+
 private:
 
     static bool current_[COUNT];
     static bool previous_[COUNT];
+
+    static std::queue<char>
+            charQueue_;
 };

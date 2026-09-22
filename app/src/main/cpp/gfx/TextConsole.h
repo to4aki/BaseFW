@@ -3,14 +3,13 @@
 #include <string>
 #include <cstring>
 
-#include "FrameBuffer.h"
-#include "Draw.h"
-#include "Color.h"
+#include "gfx/Color.h"
+#include "gfx/Draw.h"
+#include "gfx/FrameBuffer.h"
 
 class FrameBuffer;
 
-class TextConsole
-{
+class TextConsole {
 public:
 
     static constexpr int COLS = 40;
@@ -28,10 +27,10 @@ public:
             char ch);
 
     void putString(
-            const std::string& text);
+            const std::string &text);
 
     void draw(
-            FrameBuffer& fb,
+            FrameBuffer &fb,
             int x,
             int y);
 

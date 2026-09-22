@@ -2,13 +2,10 @@
 
 #include <string>
 
-#include "Color.h"
-#include "Draw.h"
-#include "Widget.h"
+#include "gfx/widget/Widget.h"
 
 class GroupBoxWidget
-        : public Widget
-{
+        : public Widget {
 public:
 
     GroupBoxWidget(
@@ -16,10 +13,10 @@ public:
             int y,
             int w,
             int h,
-            const std::string& title);
+            const std::string &title);
 
     void draw(
-            FrameBuffer& fb) override;
+            FrameBuffer &fb) override;
 
 private:
 

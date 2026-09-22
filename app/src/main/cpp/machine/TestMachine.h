@@ -1,11 +1,11 @@
 #pragma once
 
 #include "AndroidOut.h"
-#include "FrameBufferMachine.h"
+
+#include "machine/FrameBufferMachine.h"
 
 class TestMachine
-        : public FrameBufferMachine
-{
+        : public FrameBufferMachine {
 public:
 
     static constexpr int WIDTH = 320;

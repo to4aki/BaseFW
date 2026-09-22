@@ -29,12 +29,23 @@ add_library(test_cpp SHARED
         engine/Renderer.cpp
         engine/Input.cpp
         engine/KeyboardBuffer.cpp
+        engine/Keyboard.cpp
 
         machine/FrameBufferMachine.cpp
         machine/TestMachine.cpp
 
-        machine/z80ex/z80ex.c
-        machine/z80ex/z80ex_dasm.c
+        machine/bus/MemoryBus.cpp
+        machine/bus/IoBus.cpp
+
+        machine/device/RamDevice.cpp
+        machine/device/RomDevice.cpp
+        machine/device/HexLoader.cpp
+
+        machine/cpu/z80/z80ex/z80ex.c
+        machine/cpu/z80/z80ex/z80ex_dasm.c
+
+        machine/cpu/z80/Z80Cpu.cpp
+        machine/z80/Z80Machine.cpp
 )
 
 target_compile_definitions(test_cpp PRIVATE
@@ -57,10 +68,7 @@ target_include_directories(test_cpp PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/gfx
-        ${CMAKE_CURRENT_SOURCE_DIR}/gfx/widget
         ${CMAKE_CURRENT_SOURCE_DIR}/machine
-        ${CMAKE_CURRENT_SOURCE_DIR}/machine/z80ex
-        ${CMAKE_CURRENT_SOURCE_DIR}/machine/z80ex/include
 )
 
 # Configure libraries CMake uses to link your target library.

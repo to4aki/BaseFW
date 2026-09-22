@@ -4,17 +4,15 @@
 #include <string>
 #include <functional>
 
-#include "Widget.h"
-#include "Color.h"
-#include "Input.h"
+#include "engine/Input.h"
+
+#include "gfx/widget/Widget.h"
 
 class PopupMenuWidget
-        : public Widget
-{
+        : public Widget {
 public:
 
-    struct Item
-    {
+    struct Item {
         std::string text;
 
         Input::Key shortcut =
@@ -28,15 +26,15 @@ public:
             int y);
 
     void addItem(
-            const std::string& text,
+            const std::string &text,
             Input::Key shortcut,
             std::function<void()> callback);
 
     void setItems(
-            const std::vector<Item>& items);
+            const std::vector<Item> &items);
 
     void draw(
-            FrameBuffer& fb) override;
+            FrameBuffer &fb) override;
 
     void setSelected(
             int index);
@@ -53,13 +51,11 @@ public:
 
     bool processShortcut();
 
-    int width() const
-    {
+    int width() const {
         return w_;
     }
 
-    int selected() const
-    {
+    int selected() const {
         return selected_;
     }
 

@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <queue>
 
-class KeyboardBuffer
-{
+class KeyboardBuffer {
 public:
 
     void push(
@@ -18,5 +17,6 @@ public:
 
 private:
 
-    std::queue<uint8_t> buffer_;
+    std::queue<uint8_t>
+            buffer_;
 };

@@ -3,14 +3,14 @@
 #include <memory>
 #include <vector>
 
-#include "Widget.h"
-#include "FrameBuffer.h"
-#include "StatusBarWidget.h"
-#include "PanelWidget.h"
-#include "LabelWidget.h"
-#include "GroupBoxWidget.h"
-#include "PopupMenuWidget.h"
-#include "MenuBarWidget.h"
+#include "gfx/widget/Widget.h"
+
+#include "gfx/widget/GroupBoxWidget.h"
+#include "gfx/widget/LabelWidget.h"
+#include "gfx/widget/MenuBarWidget.h"
+#include "gfx/widget/PanelWidget.h"
+#include "gfx/widget/PopupMenuWidget.h"
+#include "gfx/widget/StatusBarWidget.h"
 
 class WidgetManager {
 public:
@@ -40,12 +40,12 @@ public:
     void execute();
 
     int addMenu(
-            const std::string& text,
+            const std::string &text,
             Input::Key shortcut);
 
     void addMenuItem(
             int menuId,
-            const std::string& text,
+            const std::string &text,
             Input::Key shortcut,
             std::function<void()> callback);
 

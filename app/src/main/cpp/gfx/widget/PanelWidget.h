@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Widget.h"
-#include "Draw.h"
-#include "Color.h"
+#include "gfx/widget/Widget.h"
 
 class PanelWidget
-        : public Widget
-{
+        : public Widget {
 public:
 
     PanelWidget(
@@ -16,5 +13,5 @@ public:
             int h);
 
     void draw(
-            FrameBuffer& fb) override;
+            FrameBuffer &fb) override;
 };

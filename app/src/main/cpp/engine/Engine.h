@@ -2,25 +2,25 @@
 
 #include <iostream>
 
-#include "Renderer.h"
 #include "AndroidOut.h"
-#include "IMachine.h"
-#include "Input.h"
+
+#include "engine/Input.h"
+#include "engine/Renderer.h"
+#include "machine/IMachine.h"
 
 class Renderer;
 
-class Engine
-{
+class Engine {
 public:
 
     Engine(
-            IMachine* machine,
-            Renderer* renderer);
+            IMachine *machine,
+            Renderer *renderer);
 
     void tick();
 
 private:
 
-    IMachine* machine_;
-    Renderer* renderer_;
+    IMachine *machine_;
+    Renderer *renderer_;
 };

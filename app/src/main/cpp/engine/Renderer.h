@@ -5,24 +5,21 @@
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
 #include <android/log.h>
-
 #include <game-activity/native_app_glue/android_native_app_glue.h>
 
 #include "AndroidOut.h"
 
-
 struct android_app;
 
-class Renderer
-{
+class Renderer {
 public:
 
-    explicit Renderer(android_app* app);
+    explicit Renderer(android_app *app);
 
     ~Renderer();
 
     void render(
-            const uint32_t* framebuffer,
+            const uint32_t *framebuffer,
             int width,
             int height);
 
@@ -32,7 +29,7 @@ private:
 
 private:
 
-    android_app* app_;
+    android_app *app_;
 
     EGLDisplay display_ = EGL_NO_DISPLAY;
     EGLSurface surface_ = EGL_NO_SURFACE;

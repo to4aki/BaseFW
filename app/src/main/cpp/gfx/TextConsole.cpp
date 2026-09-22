@@ -1,12 +1,11 @@
+#include <android/log.h>
 #include "TextConsole.h"
 
-TextConsole::TextConsole()
-{
+TextConsole::TextConsole() {
     clear();
 }
 
-void TextConsole::clear()
-{
+void TextConsole::clear() {
     std::memset(
             vram_,
             ' ',
@@ -18,47 +17,38 @@ void TextConsole::clear()
 
 void TextConsole::locate(
         int x,
-        int y)
-{
+        int y) {
     cursorX_ = x;
     cursorY_ = y;
 
-    if(cursorX_ < 0)
-    {
+    if (cursorX_ < 0) {
         cursorX_ = 0;
     }
 
-    if(cursorX_ >= COLS)
-    {
+    if (cursorX_ >= COLS) {
         cursorX_ = COLS - 1;
     }
 
-    if(cursorY_ < 0)
-    {
+    if (cursorY_ < 0) {
         cursorY_ = 0;
     }
 
-    if(cursorY_ >= ROWS)
-    {
+    if (cursorY_ >= ROWS) {
         cursorY_ = ROWS - 1;
     }
 }
 
 void TextConsole::putChar(
-        char ch)
-{
-    if(ch == '\r')
-    {
+        char ch) {
+    if (ch == '\r') {
         return;
     }
 
-    if(ch == '\n')
-    {
+    if (ch == '\n') {
         cursorX_ = 0;
         cursorY_++;
 
-        if(cursorY_ >= ROWS)
-        {
+        if (cursorY_ >= ROWS) {
             scroll();
         }
 
@@ -70,46 +60,38 @@ void TextConsole::putChar(
 
     cursorX_++;
 
-    if(cursorX_ >= COLS)
-    {
+    if (cursorX_ >= COLS) {
         cursorX_ = 0;
         cursorY_++;
 
-        if(cursorY_ >= ROWS)
-        {
+        if (cursorY_ >= ROWS) {
             scroll();
         }
     }
 }
 
 void TextConsole::putString(
-        const std::string& text)
-{
-    for(char ch : text)
-    {
+        const std::string &text) {
+    for (char ch: text) {
         putChar(ch);
     }
 }
 
-void TextConsole::scroll()
-{
-    for(int y = 1;
-        y < ROWS;
-        y++)
-    {
-        for(int x = 0;
-            x < COLS;
-            x++)
-        {
+void TextConsole::scroll() {
+    for (int y = 1;
+         y < ROWS;
+         y++) {
+        for (int x = 0;
+             x < COLS;
+             x++) {
             vram_[y - 1][x] =
                     vram_[y][x];
         }
     }
 
-    for(int x = 0;
-        x < COLS;
-        x++)
-    {
+    for (int x = 0;
+         x < COLS;
+         x++) {
         vram_[ROWS - 1][x] =
                 ' ';
     }
@@ -119,22 +101,19 @@ void TextConsole::scroll()
 }
 
 void TextConsole::draw(
-        FrameBuffer& fb,
+        FrameBuffer &fb,
         int baseX,
-        int baseY)
-{
+        int baseY) {
     char str[2];
 
     str[1] = 0;
 
-    for(int y = 0;
-        y < ROWS;
-        y++)
-    {
-        for(int x = 0;
-            x < COLS;
-            x++)
-        {
+    for (int y = 0;
+         y < ROWS;
+         y++) {
+        for (int x = 0;
+             x < COLS;
+             x++) {
             str[0] =
                     vram_[y][x];
 

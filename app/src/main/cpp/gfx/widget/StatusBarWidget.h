@@ -2,21 +2,18 @@
 
 #include <string>
 
-#include "Widget.h"
-#include "Draw.h"
-#include "Color.h"
+#include "gfx/widget/Widget.h"
 
 class StatusBarWidget
-        : public Widget
-{
+        : public Widget {
 public:
 
     StatusBarWidget(
             int width,
-            const std::string& text);
+            const std::string &text);
 
     void draw(
-            FrameBuffer& fb) override;
+            FrameBuffer &fb) override;
 
 private:
 

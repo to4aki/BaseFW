@@ -1,18 +1,24 @@
 #pragma once
 
+#include <android/asset_manager.h>
+
 #include <cstdint>
 
 #include "AndroidOut.h"
 
-#include "IMachine.h"
-#include "FrameBuffer.h"
-#include "WidgetManager.h"
-#include "TextConsole.h"
-#include "KeyboardBuffer.h"
+#include "engine/Keyboard.h"
+#include "engine/KeyboardBuffer.h"
+
+#include "gfx/Color.h"
+#include "gfx/FrameBuffer.h"
+#include "gfx/TextConsole.h"
+
+#include "gfx/widget/WidgetManager.h"
+
+#include "machine/IMachine.h"
 
 class FrameBufferMachine
-        : public IMachine
-{
+        : public IMachine {
 public:
 
     FrameBufferMachine(
@@ -25,16 +31,18 @@ public:
 
     void runFrame() override final;
 
-    uint32_t* frameBuffer() override;
+    uint32_t *frameBuffer() override;
 
     int width() const override;
 
     int height() const override;
 
+    void setAssetManager(
+            AAssetManager *assetManager);
+
 protected:
 
-    enum class InputLayer
-    {
+    enum class InputLayer {
         MENU,
         CONSOLE
     };
@@ -49,13 +57,13 @@ protected:
 
     virtual void onConsoleFrame();
 
-    virtual void handleConsoleKey(
-            uint8_t ch);
+    virtual void handleConsoleKey(uint8_t ch);
 
     uint8_t readKeyboard();
 
-    void writeConsole(
-            uint8_t value);
+    void writeConsole(uint8_t value);
+
+    AAssetManager *assetManager() const;
 
     FrameBuffer fb_;
 
@@ -69,13 +77,13 @@ protected:
 
     int height_;
 
-    InputLayer inputLayer_ =
-            InputLayer::MENU;
+    InputLayer inputLayer_ = InputLayer::MENU;
 
 private:
 
     void handleInput();
 
-    bool initialized_ =
-            false;
+    bool initialized_ = false;
+
+    AAssetManager *assetManager_ = nullptr;
 };

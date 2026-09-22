@@ -4,17 +4,16 @@
 #include <vector>
 #include <functional>
 
-#include "Widget.h"
-#include "Input.h"
-#include "PopupMenuWidget.h"
+#include "engine/Input.h"
+
+#include "gfx/widget/Widget.h"
+#include "gfx/widget/PopupMenuWidget.h"
 
 class MenuBarWidget
-        : public Widget
-{
+        : public Widget {
 public:
 
-    struct Item
-    {
+    struct Item {
         std::string text;
 
         Input::Key shortcut =
@@ -29,24 +28,24 @@ public:
             int width);
 
     int addItem(
-            const std::string& text,
+            const std::string &text,
             Input::Key shortcut =
             Input::COUNT);
 
     void addPopItem(
             int menuId,
-            const std::string& text,
+            const std::string &text,
             Input::Key shortcut,
             std::function<void()> callback);
 
     void setPopup(
-            PopupMenuWidget* popup);
+            PopupMenuWidget *popup);
 
     void setSelected(
             int index);
 
     void draw(
-            FrameBuffer& fb) override;
+            FrameBuffer &fb) override;
 
     void moveLeft();
 
@@ -67,7 +66,7 @@ private:
 
     int selected_ = -1;
 
-    PopupMenuWidget* popup_ =
+    PopupMenuWidget *popup_ =
             nullptr;
 
 };
