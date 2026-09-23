@@ -36,6 +36,8 @@ void RomDevice::write(
         uint16_t address,
         uint8_t value) {
     /*
-     * ROMなので無視
+     * ROMなので無視（いったん許可）
      */
+    rom_[address] =
+            value;
 }

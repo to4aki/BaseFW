@@ -12,7 +12,9 @@ FrameBufferMachine::FrameBufferMachine(
 }
 
 void FrameBufferMachine::reset() {
+
     if (!initialized_) {
+
         onInitUi();
 
         initialized_ =
@@ -22,18 +24,20 @@ void FrameBufferMachine::reset() {
     fb_.clear(
             Color::BLACK);
 
-    console_.clear();
+    if (console_) {
+
+        console_->clear();
+    }
+
+    ui_.clearSelection();
 
     inputLayer_ =
-            InputLayer::MENU;
+            InputLayer::CONSOLE;
 
     onReset();
 }
 
 void FrameBufferMachine::runFrame() {
-    static int counter = 0;
-
-    counter++;
 
     fb_.clear(
             Color::BLACK);
@@ -42,10 +46,13 @@ void FrameBufferMachine::runFrame() {
 
     onFrame();
 
-    console_.draw(
-            fb_,
-            0,
-            16);
+    if (console_) {
+
+        console_->draw(
+                fb_,
+                0,
+                16);
+    }
 
     ui_.draw(
             fb_);
@@ -76,27 +83,23 @@ void FrameBufferMachine::onMenuFrame() {
 }
 
 void FrameBufferMachine::onConsoleFrame() {
-    while (
-            Keyboard::hasData()) {
+
+    while (Keyboard::hasData()) {
+
         handleConsoleKey(
                 Keyboard::read());
     }
-/*
-    while (
-            keyboard_.hasData()) {
-        console_.putChar(
-                keyboard_.pop());
-    }
-*/
 }
 
 void FrameBufferMachine::handleConsoleKey(
         uint8_t ch) {
+
     keyboard_.push(
             ch);
 }
 
 uint8_t FrameBufferMachine::readKeyboard() {
+
     if (!keyboard_.hasData()) {
         return 0;
     }
@@ -106,23 +109,27 @@ uint8_t FrameBufferMachine::readKeyboard() {
 
 void FrameBufferMachine::writeConsole(
         uint8_t value) {
-    console_.putChar(
-            static_cast<char>(
-                    value));
+
+    if (console_) {
+
+        console_->putChar(
+                static_cast<char>(
+                        value));
+    }
 }
 
 void FrameBufferMachine::handleInput() {
+
     switch (inputLayer_) {
+
         case InputLayer::MENU:
 
             if (Input::isPressed(
                     Input::ESC)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "ESC");
 
                 ui_.clearSelection();
+
+                Keyboard::clear();
 
                 inputLayer_ =
                         InputLayer::CONSOLE;
@@ -131,74 +138,51 @@ void FrameBufferMachine::handleInput() {
             }
 
             if (ui_.hasSelection()) {
-                if (ui_.processPopupShortcut()) {
-                    __android_log_print(
-                            ANDROID_LOG_ERROR,
-                            "INPUT",
-                            "POPUP SHORTCUT");
 
+                if (ui_.processPopupShortcut()) {
                     return;
                 }
             } else {
-                if (ui_.processShortcut()) {
-                    __android_log_print(
-                            ANDROID_LOG_ERROR,
-                            "INPUT",
-                            "MENU SHORTCUT");
 
+                if (ui_.processShortcut()) {
                     return;
                 }
             }
 
-            if (Input::isPressed(Input::LEFT)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "LEFT");
+            if (Input::isPressed(
+                    Input::LEFT)) {
 
                 ui_.moveLeft();
 
                 return;
             }
 
-            if (Input::isPressed(Input::RIGHT)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "RIGHT");
+            if (Input::isPressed(
+                    Input::RIGHT)) {
 
                 ui_.moveRight();
 
                 return;
             }
 
-            if (Input::isPressed(Input::UP)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "UP");
+            if (Input::isPressed(
+                    Input::UP)) {
 
                 ui_.moveUp();
 
                 return;
             }
 
-            if (Input::isPressed(Input::DOWN)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "DOWN");
+            if (Input::isPressed(
+                    Input::DOWN)) {
 
                 ui_.moveDown();
 
                 return;
             }
 
-            if (Input::isPressed(Input::ENTER)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "ENTER");
+            if (Input::isPressed(
+                    Input::ENTER)) {
 
                 ui_.execute();
 
@@ -213,10 +197,8 @@ void FrameBufferMachine::handleInput() {
 
             if (Input::isPressed(
                     Input::ESC)) {
-                __android_log_print(
-                        ANDROID_LOG_ERROR,
-                        "INPUT",
-                        "ESC CONSOLE");
+
+                Keyboard::clear();
 
                 inputLayer_ =
                         InputLayer::MENU;
@@ -232,10 +214,18 @@ void FrameBufferMachine::handleInput() {
 
 void FrameBufferMachine::setAssetManager(
         AAssetManager *assetManager) {
+
     assetManager_ =
             assetManager;
 }
 
 AAssetManager *FrameBufferMachine::assetManager() const {
+
     return assetManager_;
+}
+
+void FrameBufferMachine::setConsole(
+        IConsole *console) {
+
+    console_ = console;
 }

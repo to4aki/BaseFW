@@ -85,14 +85,12 @@ Z80Cpu::Z80Cpu(
 
 Z80Cpu::~Z80Cpu() {
     if (cpu_) {
-        z80ex_destroy(
-                cpu_);
+        z80ex_destroy(cpu_);
     }
 }
 
 void Z80Cpu::reset() {
-    z80ex_reset(
-            cpu_);
+    z80ex_reset(cpu_);
 }
 
 void Z80Cpu::runCycles(

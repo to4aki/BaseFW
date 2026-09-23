@@ -3,6 +3,11 @@
 #include <cstdint>
 #include <queue>
 
+enum class KeyboardLayout {
+    US,
+    JIS
+};
+
 class Keyboard {
 public:
 
@@ -14,13 +19,26 @@ public:
 
     static uint8_t read();
 
-private:
+    static void clear();
 
+    static void setLayout(
+            KeyboardLayout layout);
+
+private:
     static uint8_t convertKeyCode(
             int keyCode,
             int metaState);
 
-private:
+    static uint8_t convertUsKeyCode(
+            int keyCode,
+            int metaState);
+
+    static uint8_t convertJisKeyCode(
+            int keyCode,
+            int metaState);
+
+    static KeyboardLayout
+            layout_;
 
     static std::queue<uint8_t>
             queue_;

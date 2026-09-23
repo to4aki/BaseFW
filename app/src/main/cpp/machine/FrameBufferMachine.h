@@ -11,7 +11,7 @@
 
 #include "gfx/Color.h"
 #include "gfx/FrameBuffer.h"
-#include "gfx/TextConsole.h"
+#include "gfx/IConsole.h"
 
 #include "gfx/widget/WidgetManager.h"
 
@@ -69,7 +69,10 @@ protected:
 
     WidgetManager ui_;
 
-    TextConsole console_;
+    IConsole *console_ = nullptr;
+
+    void setConsole(
+            IConsole *console);
 
     KeyboardBuffer keyboard_;
 

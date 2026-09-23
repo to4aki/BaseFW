@@ -32,7 +32,6 @@ add_library(test_cpp SHARED
         engine/Keyboard.cpp
 
         machine/FrameBufferMachine.cpp
-        machine/TestMachine.cpp
 
         machine/bus/MemoryBus.cpp
         machine/bus/IoBus.cpp
