@@ -1,52 +1,30 @@
 #include "Renderer.h"
+#include <android/native_window.h>
 
-static const char
-        kVertexShader[] =
-        R"(#version 300 es
+static const char kVertexShader[] =
+"attribute vec2 aPos;\n"
+"attribute vec2 aUV;\n"
+"varying vec2 vUV;\n"
+"void main()\n"
+"{\n"
+"    vUV = aUV;\n"
+"    gl_Position = vec4(aPos, 0.0, 1.0);\n"
+"}\n";
 
-in vec2 aPos;
-in vec2 aUV;
-
-out vec2 vUV;
-
-void main()
-{
-    vUV = aUV;
-    gl_Position = vec4(
-            aPos,
-            0.0,
-            1.0);
-}
-)";
-
-static const char
-        kFragmentShader[] =
-        R"(#version 300 es
-
-precision mediump float;
-
-in vec2 vUV;
-
-uniform sampler2D uTexture;
-
-out vec4 outColor;
-
-void main()
-{
-    outColor =
-            texture(
-                    uTexture,
-                    vUV);
-}
-)";
-
+static const char kFragmentShader[] =
+"precision mediump float;\n"
+"varying vec2 vUV;\n"
+"uniform sampler2D uTexture;\n"
+"void main()\n"
+"{\n"
+"    gl_FragColor = texture2D(uTexture, vUV);\n"
+"}\n";
 
 static GLuint compileShader(
         GLenum type,
         const char *source)
 {
-    GLuint shader =
-            glCreateShader(type);
+    GLuint shader = glCreateShader(type);
 
     glShaderSource(
             shader,
@@ -54,8 +32,7 @@ static GLuint compileShader(
             &source,
             nullptr);
 
-    glCompileShader(
-            shader);
+    glCompileShader(shader);
 
     GLint ok = 0;
 
@@ -82,8 +59,7 @@ static GLuint compileShader(
                 "Shader compile failed:\n%s",
                 log);
 
-        glDeleteShader(
-                shader);
+        glDeleteShader(shader);
 
         return 0;
     }
@@ -137,16 +113,38 @@ Renderer::~Renderer() {
 }
 
 void Renderer::initRenderer() {
+    if (!app_ || !app_->window) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "app or app->window is null");
+        return;
+    }
+
     display_ =
             eglGetDisplay(
                     EGL_DEFAULT_DISPLAY);
 
-    eglInitialize(
+    if (display_ == EGL_NO_DISPLAY) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "eglGetDisplay failed");
+        return;
+    }
+
+    if (!eglInitialize(
             display_,
             nullptr,
-            nullptr);
+            nullptr)) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "eglInitialize failed");
+        return;
+    }
 
-    const EGLint configAttribs[] =
+    const EGLint configAttribsES3[] =
             {
                     EGL_RENDERABLE_TYPE,
                     EGL_OPENGL_ES3_BIT,
@@ -154,27 +152,60 @@ void Renderer::initRenderer() {
                     EGL_SURFACE_TYPE,
                     EGL_WINDOW_BIT,
 
-                    EGL_RED_SIZE,
-                    8,
+                    EGL_NONE
+            };
 
-                    EGL_GREEN_SIZE,
-                    8,
+    const EGLint configAttribsES2[] =
+            {
+                    EGL_RENDERABLE_TYPE,
+                    EGL_OPENGL_ES2_BIT,
 
-                    EGL_BLUE_SIZE,
-                    8,
+                    EGL_SURFACE_TYPE,
+                    EGL_WINDOW_BIT,
 
                     EGL_NONE
             };
 
-    EGLConfig config;
-    EGLint numConfig;
+    EGLConfig config = nullptr;
+    EGLint numConfig = 0;
 
-    eglChooseConfig(
+    if (!eglChooseConfig(
             display_,
-            configAttribs,
+            configAttribsES3,
             &config,
             1,
-            &numConfig);
+            &numConfig) || numConfig < 1) {
+        __android_log_print(
+                ANDROID_LOG_INFO,
+                "Renderer",
+                "ES3 config not supported, trying ES2...");
+
+        if (!eglChooseConfig(
+                display_,
+                configAttribsES2,
+                &config,
+                1,
+                &numConfig) || numConfig < 1) {
+            __android_log_print(
+                    ANDROID_LOG_ERROR,
+                    "Renderer",
+                    "eglChooseConfig ES2 failed");
+            return;
+        }
+    }
+
+    EGLint format = 0;
+    if (eglGetConfigAttrib(
+            display_,
+            config,
+            EGL_NATIVE_VISUAL_ID,
+            &format)) {
+        ANativeWindow_setBuffersGeometry(
+                app_->window,
+                0,
+                0,
+                format);
+    }
 
     surface_ =
             eglCreateWindowSurface(
@@ -183,7 +214,16 @@ void Renderer::initRenderer() {
                     app_->window,
                     nullptr);
 
-    const EGLint ctxAttribs[] =
+    if (surface_ == EGL_NO_SURFACE) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "eglCreateWindowSurface failed: 0x%x",
+                eglGetError());
+        return;
+    }
+
+    const EGLint ctxAttribs3[] =
             {
                     EGL_CONTEXT_CLIENT_VERSION,
                     3,
@@ -195,13 +235,50 @@ void Renderer::initRenderer() {
                     display_,
                     config,
                     EGL_NO_CONTEXT,
-                    ctxAttribs);
+                    ctxAttribs3);
 
-    eglMakeCurrent(
+    if (context_ == EGL_NO_CONTEXT) {
+        __android_log_print(
+                ANDROID_LOG_INFO,
+                "Renderer",
+                "ES3 context creation failed, trying ES2...");
+
+        const EGLint ctxAttribs2[] =
+                {
+                        EGL_CONTEXT_CLIENT_VERSION,
+                        2,
+                        EGL_NONE
+                };
+
+        context_ =
+                eglCreateContext(
+                        display_,
+                        config,
+                        EGL_NO_CONTEXT,
+                        ctxAttribs2);
+    }
+
+    if (context_ == EGL_NO_CONTEXT) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "eglCreateContext failed completely: 0x%x",
+                eglGetError());
+        return;
+    }
+
+    if (!eglMakeCurrent(
             display_,
             surface_,
             surface_,
-            context_);
+            context_)) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "eglMakeCurrent failed: 0x%x",
+                eglGetError());
+        return;
+    }
 
     GLuint vs =
             compileShader(
@@ -212,6 +289,15 @@ void Renderer::initRenderer() {
             compileShader(
                     GL_FRAGMENT_SHADER,
                     kFragmentShader);
+
+    if (vs == 0 || fs == 0) {
+        __android_log_print(
+                ANDROID_LOG_ERROR,
+                "Renderer",
+                "Shader compilation failed, vs=%u, fs=%u",
+                vs, fs);
+        return;
+    }
 
     program_ =
             glCreateProgram();
@@ -302,20 +388,25 @@ void Renderer::render(
         int width,
         int height)
 {
-    EGLint surfaceWidth;
-    EGLint surfaceHeight;
+    if (display_ == EGL_NO_DISPLAY || surface_ == EGL_NO_SURFACE || context_ == EGL_NO_CONTEXT) {
+        return;
+    }
 
-    eglQuerySurface(
+    EGLint surfaceWidth = 0;
+    EGLint surfaceHeight = 0;
+
+    if (!eglQuerySurface(
             display_,
             surface_,
             EGL_WIDTH,
-            &surfaceWidth);
-
-    eglQuerySurface(
+            &surfaceWidth) ||
+        !eglQuerySurface(
             display_,
             surface_,
             EGL_HEIGHT,
-            &surfaceHeight);
+            &surfaceHeight)) {
+        return;
+    }
 
     glViewport(
             0,
@@ -395,5 +486,4 @@ void Renderer::render(
     eglSwapBuffers(
             display_,
             surface_);
-    
 }
