@@ -15,6 +15,8 @@ add_library(test_cpp SHARED
         gfx/FrameBuffer.cpp
         gfx/TextConsole.cpp
         gfx/Draw.cpp
+        gfx/BitmapFont.cpp
+        gfx/FontManager.cpp
 
         gfx/widget/Widget.cpp
         gfx/widget/LabelWidget.cpp
@@ -45,6 +47,8 @@ add_library(test_cpp SHARED
 
         machine/cpu/z80/Z80Cpu.cpp
         machine/z80/Z80Machine.cpp
+
+        thirdparty/stb_truetype.cpp
 )
 
 target_compile_definitions(test_cpp PRIVATE

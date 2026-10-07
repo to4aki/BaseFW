@@ -2,7 +2,10 @@
 
 #include "gfx/FrameBuffer.h"
 #include "gfx/Color.h"
-#include "gfx/Font8x8.h"
+#include "gfx/BitmapFont.h"
+#include "gfx/FontManager.h"
+
+class Glyph;
 
 namespace Draw {
     void pixel(
@@ -97,4 +100,17 @@ namespace Draw {
             const char *text,
             uint32_t fg,
             uint32_t bg);
+
+    void drawGlyph(
+            FrameBuffer& fb,
+            int px,
+            int py,
+            const Glyph& glyph,
+            int cellW,
+            int cellH,
+            uint32_t fg,
+            uint32_t bg);
+
+    int stringWidth(
+            const char* text);
 }

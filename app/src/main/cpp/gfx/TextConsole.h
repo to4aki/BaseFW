@@ -2,11 +2,15 @@
 
 #include <string>
 #include <cstring>
+#include <android/log.h>
 
 #include "gfx/Color.h"
 #include "gfx/Draw.h"
 #include "gfx/IConsole.h"
 #include "gfx/FrameBuffer.h"
+
+#include "FontManager.h"
+#include "BitmapFont.h"
 
 class FrameBuffer;
 

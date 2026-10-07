@@ -1,5 +1,3 @@
-#include <android/log.h>
-
 #include "TextConsole.h"
 
 TextConsole::TextConsole() {
@@ -46,6 +44,7 @@ void TextConsole::locate(
 
 void TextConsole::putChar(
         char ch) {
+
     if (ch == 0x1B) {
         escapeMode_ = true;
         escapeBuffer_.clear();
@@ -115,6 +114,11 @@ void TextConsole::putChar(
         return;
     }
 
+    if(static_cast<unsigned char>(ch) < 0x20)
+    {
+        return;
+    }
+
     vram_[cursorY_][cursorX_] =
             ch;
 
@@ -173,27 +177,29 @@ void TextConsole::scroll() {
 }
 
 void TextConsole::draw(
-        FrameBuffer &fb,
+        FrameBuffer& fb,
         int baseX,
-        int baseY) {
+        int baseY)
+{
     char str[2];
 
-    str[0] = 0;
     str[1] = 0;
 
-    for (int y = 0;
-         y < ROWS;
-         y++) {
-        for (int x = 0;
-             x < COLS;
-             x++) {
+    for(int y = 0;
+        y < ROWS;
+        y++)
+    {
+        for(int x = 0;
+            x < COLS;
+            x++)
+        {
             str[0] =
                     vram_[y][x];
 
             Draw::drawString(
                     fb,
-                    baseX + x * 8,
-                    baseY + y * 8,
+                    baseX + x * 16,
+                    baseY + y * 22,
                     str,
                     Color::WHITE,
                     Color::BLACK);

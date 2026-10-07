@@ -45,7 +45,7 @@ void PopupMenuWidget::addItem(
     int itemWidth =
             static_cast<int>(
                     item.text.length())
-            * 8
+            * 16
             + 16;
 
     if (itemWidth > w_) {
@@ -55,7 +55,7 @@ void PopupMenuWidget::addItem(
     h_ =
             static_cast<int>(
                     items_.size())
-            * 12
+            * 20
             + 4;
 }
 
@@ -70,7 +70,7 @@ void PopupMenuWidget::setItems(
         int itemWidth =
                 static_cast<int>(
                         item.text.length())
-                * 8
+                * 16
                 + 16;
 
         if (itemWidth > w_) {
@@ -81,13 +81,15 @@ void PopupMenuWidget::setItems(
     h_ =
             static_cast<int>(
                     items_.size())
-            * 12
+            * 20
             + 4;
 }
 
 void PopupMenuWidget::draw(
-        FrameBuffer &fb) {
-    if (items_.empty()) {
+        FrameBuffer &fb)
+{
+    if (items_.empty())
+    {
         return;
     }
 
@@ -109,22 +111,27 @@ void PopupMenuWidget::draw(
 
     for (size_t i = 0;
          i < items_.size();
-         i++) {
+         i++)
+    {
         uint32_t fg =
                 Color::WHITE;
 
         uint32_t bg =
                 Color::BLUE;
 
+        int itemY =
+                screenY() + 2
+                + static_cast<int>(i) * 20;
+
         if (static_cast<int>(i)
-            == selected_) {
+            == selected_)
+        {
             Draw::fillRect(
                     fb,
                     screenX() + 3,
-                    screenY() + 2
-                    + static_cast<int>(i) * 12,
+                    itemY,
                     w_ - 6,
-                    12,
+                    20,
                     Color::WHITE);
 
             fg =
@@ -137,8 +144,7 @@ void PopupMenuWidget::draw(
         Draw::drawString(
                 fb,
                 screenX() + 4,
-                screenY() + 4
-                + static_cast<int>(i) * 12,
+                itemY,
                 items_[i].text.c_str(),
                 fg,
                 bg);

@@ -51,7 +51,7 @@ void FrameBufferMachine::runFrame() {
         console_->draw(
                 fb_,
                 0,
-                16);
+                24);
     }
 
     ui_.draw(

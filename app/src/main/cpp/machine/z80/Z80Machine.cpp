@@ -3,8 +3,8 @@
 Z80Machine::Z80Machine()
         :
         FrameBufferMachine(
-                320,
-                216),
+                640,
+                576),
         console_(),
         ram_(32768),
         ioBus_(
@@ -72,6 +72,10 @@ void Z80Machine::onReset() {
                 loadRom(
                         "roms/rc2014_32k.hex");
 //                        "roms/hexFiles/ROM.HEX");
+//                loadRom(
+//                        "roms/hexFiles/CPM22.HEX");
+//                loadRom(
+//                        "roms/hexFiles/CBINOD64.HEX");
     }
 
     if (romLoaded_) {
@@ -154,7 +158,7 @@ void Z80Machine::onInitUi() {
 
     int reg =
             ui_.addMenu(
-                    "REG",
+                    "レジスタ",
                     Input::NUM2);
 
     ui_.addMenuItem(
@@ -206,7 +210,7 @@ void Z80Machine::onInitUi() {
 
     int memory =
             ui_.addMenu(
-                    "MEMORY",
+                    "Memory",
                     Input::NUM4);
 
     ui_.addMenuItem(
@@ -237,7 +241,7 @@ void Z80Machine::onInitUi() {
 
     ui_.addMenuItem(
             tools,
-            "KEYMAP",
+            "Keymap",
             Input::NUM2,
             [this]() {
             });

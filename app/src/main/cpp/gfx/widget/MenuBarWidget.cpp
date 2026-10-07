@@ -10,7 +10,7 @@ MenuBarWidget::MenuBarWidget(
                 0,
                 0,
                 width,
-                16)
+                24)
 {
 }
 
@@ -120,6 +120,10 @@ void MenuBarWidget::draw(
         const Item& item =
                 items_[i];
 
+        const int textWidth =
+                Draw::stringWidth(
+                        item.text.c_str());
+
         uint32_t fg =
                 Color::WHITE;
 
@@ -131,11 +135,10 @@ void MenuBarWidget::draw(
         {
             Draw::fillRect(
                     fb,
-                    x - 2,
+                    x - 4,
                     screenY() + 2,
-                    static_cast<int>(
-                            item.text.length()) * 8 + 4,
-                    12,
+                    textWidth + 8,
+                    h_ - 4,
                     Color::WHITE);
 
             fg =
@@ -148,16 +151,14 @@ void MenuBarWidget::draw(
         Draw::drawString(
                 fb,
                 x,
-                screenY() + 4,
+                screenY(),
                 item.text.c_str(),
                 fg,
                 bg);
 
         x +=
-                static_cast<int>(
-                        item.text.length())
-                * 8
-                + 8;
+                textWidth
+                + 12;
     }
 }
 
@@ -207,10 +208,9 @@ int MenuBarWidget::selectedX() const
         i++)
     {
         x +=
-                static_cast<int>(
-                        items_[i].text.length())
-                * 8
-                + 8;
+                Draw::stringWidth(
+                        items_[i].text.c_str())
+                + 12;
     }
 
     return x;
@@ -281,7 +281,7 @@ void MenuBarWidget::updatePopup()
 
     popup_->setPosition(
             x,
-            16);
+            24);
 }
 
 int MenuBarWidget::selected() const

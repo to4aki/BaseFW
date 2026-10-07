@@ -11,6 +11,8 @@
 #include "Input.h"
 #include "Keyboard.h"
 
+#include "gfx/FontManager.h"
+
 #include "machine/z80/Z80Machine.h"
 
 extern "C"
@@ -113,6 +115,17 @@ void android_main(
 
     machine->setAssetManager(
             app->activity->assetManager);
+
+    bool fontOk =
+            FontManager::instance()
+                    .initialize(
+                            app->activity->assetManager);
+
+    __android_log_print(
+            ANDROID_LOG_ERROR,
+            "FONT",
+            "init=%d",
+            fontOk);
 
     Engine engine(
             machine.get(),
